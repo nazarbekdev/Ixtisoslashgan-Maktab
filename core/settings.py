@@ -20,6 +20,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin', 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,11 +30,11 @@ INSTALLED_APPS = [
     # 'accounts.apps.AuthConfig',
     
     'accounts',
+    'courses',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt', 
     'drf_yasg',
-    
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -105,6 +106,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+# Jazzmin sozlamalari (ixtiyoriy, lekin foydali)
+JAZZMIN_SETTINGS = {
+    "site_title": "Ixtisoslashgan Maktab Admin",
+    "site_header": "Ixtisoslashgan Maktab",
+    "site_brand": "Admin Panel",
+    "welcome_sign": "Xush kelibsiz Admin Paneliga!",
+    "copyright": "© 2025 Sizning Kompaniyangiz",
+    "topmenu_links": [
+        {"name": "Bosh sahifa", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Chiqish", "url": "admin:logout", "new_window": True},
+    ],
+    # Bootstrap temasini o‘zgartirish uchun (masalan, "cyborg" temasi)
+    "show_ui_builder": True,  # UI moslashtiruvchi vositasini yoqish
+}
+
+# Jazzmin UI o‘zgartirishlari (ixtiyoriy)
+JAZZMIN_UI_TWEAKS = {
+    "theme": "cerulean",
+    # "dark_mode_theme": "cerulean",
+    # "navbar": "darkly",
+    # "sidebar": "darkly",
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -152,7 +175,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Add this line to set the STATIC_ROOT
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Ensure STATICFILES_DIRS is correctly set if you have additional static directories
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
