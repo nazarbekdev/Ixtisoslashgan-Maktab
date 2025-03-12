@@ -14,7 +14,7 @@ class Category(models.Model):
 class News(models.Model):
     title = models.CharField(max_length=200)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='news')
-    image = models.ImageField(upload_to='news_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='media/news_images/', blank=True, null=True)
     description = models.TextField()  # Qisqacha tavsif
     content = models.TextField()  # To'liq matn (batafsil uchun)
     author = models.CharField(max_length=100)

@@ -39,8 +39,8 @@ class Topic(models.Model):
     class_level = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='topics')
     title = models.CharField(max_length=100)
     video_url = models.URLField(blank=True, null=True, )
-    lecture_file = models.FileField(upload_to='lectures/', blank=True, null=True)
-    presentation_file = models.FileField(upload_to='presentations/', blank=True, null=True)
+    lecture_file = models.FileField(upload_to='media/lectures/', blank=True, null=True)
+    presentation_file = models.FileField(upload_to='media/presentations/', blank=True, null=True)
 
     def __str__(self):
         return self.title
