@@ -1,4 +1,3 @@
-# auth/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -12,30 +11,16 @@ class CustomUser(AbstractUser):
         ('female', 'Ayol'),
     )
     
-    REGION_CHOICES = (
-        ('qoraqalpogiston', "Qoraqalpog'iston Respublikasi"),
-        ('andijon', 'Andijon viloyati'),
-        ('buxoro', 'Buxoro viloyati'),
-        ('jizzax', 'Jizzax viloyati'),
-        ('qashqadaryo', "Qashqadaryo viloyati"),
-        ('navoiy', 'Navoiy viloyati'),
-        ('namangan', 'Namangan viloyati'),
-        ('samarkand', 'Samarkand viloyati'),
-        ('surxondaryo', "Surxondaryo viloyati"),
-        ('sirdaryo', 'Sirdaryo viloyati'),
-        ('toshkent', 'Toshkent viloyati'),
-        ('fargona', 'Farg‘ona viloyati'),
-        ('xorazm', 'Xorazm viloyati'),
-    )
-    
     username = models.CharField(max_length=255, unique=True, help_text="Telefon raqam yoki Email")
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
+    image = models.ImageField(upload_to='media/user_image/', null=True, blank=True, help_text="Profil rasmi")
     phone_number = models.CharField(max_length=13, unique=True, blank=True, null=True, help_text="Telefon raqam")
     email = models.EmailField(blank=True, null=True, help_text="Ixtiyoriy")
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
     subject = models.CharField(max_length=100, blank=True, null=True, help_text="O‘qituvchi uchun fan yo‘nalishi")
-    region = models.CharField(max_length=100, choices=REGION_CHOICES, blank=True, null=True, help_text="Talaba uchun viloyat")
+    region = models.CharField(max_length=100, blank=True, null=True, help_text="Talaba uchun viloyat")
+    district = models.CharField(max_length=100, blank=True, null=True, help_text="Talaba uchun tuman")
     school = models.CharField(max_length=100, blank=True, null=True, help_text="Talaba uchun maktab")
     class_id = models.CharField(max_length=10, blank=True, null=True, help_text="Talaba uchun sinf")
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True, help_text="Talaba uchun jins")
@@ -43,6 +28,9 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.first_name + ' ' + self.last_name
 
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}" if self.first_name and self.last_name else self.username
+    
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
