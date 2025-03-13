@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'accounts',
     'courses',
     'contacts',
+    'students',
     'news',
     'corsheaders',
     'rest_framework',
@@ -64,15 +65,16 @@ CORS_ALLOW_ALL_ORIGINS = True  # Sinov uchun (ishlab chiqishda False qiling)
 # DRF sozlamalari
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     ),
 }
 # SIMPLE JWT sozlamalari
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
