@@ -2,11 +2,13 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import Class, Subject, OfflineStudent, Topic, Test
 from .serializers import ClassSerializer, SubjectSerializer, OfflineStudentSerializer, TopicSerializer, TestSerializer
 
 # Class uchun API
 class ClassListCreateAPIView(GenericAPIView):
+    permission_classes = [IsAuthenticated]  # Autentifikatsiya qo'shildi
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
 
@@ -26,6 +28,7 @@ class ClassListCreateAPIView(GenericAPIView):
 
 # Subject uchun API
 class SubjectListCreateAPIView(GenericAPIView):
+    permission_classes = [IsAuthenticated]  # Autentifikatsiya qo'shildi
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
 
@@ -43,6 +46,27 @@ class SubjectListCreateAPIView(GenericAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+# Topic uchun API
+class TopicListAPIView(ListAPIView):
+    permission_classes = [IsAuthenticated]  # Autentifikatsiya qo'shildi
+    serializer_class = TopicSerializer
+
+    def get_queryset(self):
+        subject_id = self.request.query_params.get('subject_id')
+        class_id = self.request.query_params.get('class_id')
+        return Topic.objects.filter(subject_id=subject_id, class_level_id=class_id)
+
+# o'zgaradi...
+class TestListAPIView(ListAPIView):
+    permission_classes = [IsAuthenticated]  # Autentifikatsiya qo'shildi
+    serializer_class = TestSerializer
+
+    def get_queryset(self):
+        subject_id = self.request.query_params.get('subject_id')
+        class_id = self.request.query_params.get('class_id')
+        return Test.objects.filter(subject_id=subject_id, class_level_id=class_id)
+
+# OfflineStudent uchun API
 class OfflineStudentAPIView(GenericAPIView):
     queryset = OfflineStudent.objects.all()
     serializer_class = OfflineStudentSerializer
@@ -60,20 +84,3 @@ class OfflineStudentAPIView(GenericAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class TopicListAPIView(ListAPIView):
-    serializer_class = TopicSerializer
-
-    def get_queryset(self):
-        subject_id = self.request.query_params.get('subject_id')
-        class_id = self.request.query_params.get('class_id')
-        return Topic.objects.filter(subject_id=subject_id, class_level_id=class_id)
-
-# o'zgaradi...
-class TestListAPIView(ListAPIView):
-    serializer_class = TestSerializer
-
-    def get_queryset(self):
-        subject_id = self.request.query_params.get('subject_id')
-        class_id = self.request.query_params.get('class_id')
-        return Test.objects.filter(subject_id=subject_id, class_level_id=class_id)
