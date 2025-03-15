@@ -82,6 +82,7 @@ class LoginAPIView(GenericAPIView):
 class AllUserAPIView(GenericAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = AllUserSerializer
+    permission_classes = []
 
     def get(self, request, *args, **kwargs):
         """

@@ -7,8 +7,8 @@ class CustomUser(AbstractUser):
         ('student', 'Talaba'),
     )
     GENDER_CHOICES = (
-        ('male', 'Erkak'),
-        ('female', 'Ayol'),
+        ('Erkak', 'Erkak'),
+        ('Ayol', 'Ayol'),
     )
     
     username = models.CharField(max_length=255, unique=True, help_text="Telefon raqam yoki Email")
