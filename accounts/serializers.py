@@ -27,7 +27,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             region=validated_data.get('region', ''),
             district=validated_data.get('district', ''),
             school=validated_data.get('school', ''),
-            class_id=validated_data.get('class_id', ''),
+            class_id=validated_data.get('class_id', None),
             gender=validated_data.get('gender', '')
         )
         

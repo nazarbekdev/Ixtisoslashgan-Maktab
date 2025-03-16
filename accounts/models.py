@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+# from courses.models import Class
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
@@ -22,7 +23,7 @@ class CustomUser(AbstractUser):
     region = models.CharField(max_length=100, blank=True, null=True, help_text="Talaba uchun viloyat")
     district = models.CharField(max_length=100, blank=True, null=True, help_text="Talaba uchun tuman")
     school = models.CharField(max_length=100, blank=True, null=True, help_text="Talaba uchun maktab")
-    class_id = models.CharField(max_length=10, blank=True, null=True, help_text="Talaba uchun sinf")
+    class_id = models.ForeignKey('courses.Class', on_delete=models.CASCADE, null=True, blank=True, related_name='users', help_text="Talaba uchun sinf")
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True, help_text="Talaba uchun jins")
 
     def __str__(self):
