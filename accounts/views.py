@@ -9,7 +9,7 @@ from .models import CustomUser
 
 class RegisterAPIView(GenericAPIView):
     serializer_class = RegisterSerializer
-    permission_classes = ()  # Autentifikatsiya talab qilinmaydi
+    permission_classes = () 
 
     def post(self, request, *args, **kwargs):
         """
