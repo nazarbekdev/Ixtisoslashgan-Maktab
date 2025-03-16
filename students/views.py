@@ -4,6 +4,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from accounts.models import CustomUser
 from accounts.serializers import RegisterSerializer
+from teachers.models import Material
+from .models import Submission
+from .serializers import SubmissionSerializer
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
@@ -71,3 +74,26 @@ class StudentProfileImageAPIView(APIView):
             return Response({'image': serializer.data['image']}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class SubmitAssignmentAPIView(APIView):
+    permission_classes = []
+
+    def post(self, request, *args, **kwargs):
+        material_id = request.data.get('material_id')
+        file = request.FILES.get('file')
+
+        if not material_id or not file:
+            return Response({"error": "Material ID va fayl majburiy!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            material = Material.objects.get(id=material_id)
+            submission = Submission.objects.create(
+                student=request.user,
+                material=material,
+                file=file
+            )
+            serializer = SubmissionSerializer(submission)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Material.DoesNotExist:
+            return Response({"error": "Material topilmadi!"}, status=status.HTTP_404_NOT_FOUND)
+        
