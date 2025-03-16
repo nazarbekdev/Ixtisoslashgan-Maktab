@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'courses',
     'contacts',
     'students',
+    'teachers',
     'news',
     'corsheaders',
     'rest_framework',
