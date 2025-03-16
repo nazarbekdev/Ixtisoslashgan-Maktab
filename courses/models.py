@@ -1,5 +1,5 @@
 from django.db import models
-
+from accounts.models import CustomUser
 
 class Class(models.Model):
     name = models.CharField(max_length=50)
@@ -33,6 +33,46 @@ class OfflineStudent(models.Model):
         verbose_name = 'Oflayn Student'
         verbose_name_plural = 'Oflayn Studentlar'
 
+
+class StudentSubject(models.Model):
+    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='student_subjects')
+    class_number = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='student_subjects')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='student_subjects')
+    reyting = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return f'{self.student} - {self.subject}'
+
+    class Meta:
+        verbose_name = 'Talaba Fan'
+        verbose_name_plural = 'Talaba Fanlari'
+     
+
+class TeacherExpertise(models.Model):
+    teacher = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='teacher_expertise')
+    class_number = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='teacher_expertise')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='teacher_expertise')
+    
+    def __str__(self):
+        return f'{self.teacher} - {self.subject}'
+
+    class Meta:
+        verbose_name = 'O\'qituvchi Mutahasislik'
+        verbose_name_plural = 'O\'qituvchi Mutahasisliklari'
+           
+
+class TeacherCLass(models.Model):
+    teacher = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='teacher_subjects')
+    class_number = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='teacher_subjects')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='teacher_subjects')
+    
+    def __str__(self):
+        return f'{self.teacher} - {self.subject}'
+
+    class Meta:
+        verbose_name = 'O\'qituvchi Sinf'
+        verbose_name_plural = 'O\'qituvchi Sinflari'
+        
 
 class Topic(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='topics')

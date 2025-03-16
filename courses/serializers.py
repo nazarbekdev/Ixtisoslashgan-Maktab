@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Class, Subject, OfflineStudent, Topic, Test
+from .models import Class, Subject, OfflineStudent, Topic, Test, StudentSubject, TeacherCLass, TeacherExpertise
 
 class ClassSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,6 +10,23 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = ['id', 'name']
+        
+class StudentSubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentSubject
+        fields = '__all__'
+
+
+class TeacherExpertiseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherExpertise
+        fields = '__all__'
+        
+
+class TeacherClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherCLass
+        fields = '__all__'
         
 class OfflineStudentSerializer(serializers.ModelSerializer):
     class Meta:

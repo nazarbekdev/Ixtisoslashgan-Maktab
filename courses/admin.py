@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Class, Subject, OfflineStudent, Topic, Test
+from .models import Class, Subject, OfflineStudent, Topic, Test, StudentSubject, TeacherCLass, TeacherExpertise
 
 @admin.register(Class)
 class ClassAdmin(admin.ModelAdmin):
@@ -23,4 +23,19 @@ class TopicAdmin(admin.ModelAdmin):
 @admin.register(Test)
 class TestAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'questions', 'subject', 'class_level']
+    
+@admin.register(StudentSubject)
+class StudentSubjectAdmin(admin.ModelAdmin):
+    list_display = ['id', 'student', 'subject', 'class_number', 'reyting']
+    search_fields = ['student', 'subject', 'class_number']
+    
+@admin.register(TeacherCLass)
+class TeacherSubjectAdmin(admin.ModelAdmin):
+    list_display = ['id', 'teacher', 'class_number', 'subject']
+    search_fields = ['teacher', 'class_number', 'subject']
+    
+@admin.register(TeacherExpertise)
+class TeacherExpertiseAdmin(admin.ModelAdmin):
+    list_display = ['id', 'teacher', 'class_number', 'subject']
+    search_fields = ['teacher', 'class_number', 'subject']
     
