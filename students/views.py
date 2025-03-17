@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from accounts.models import CustomUser
 from accounts.serializers import RegisterSerializer
 from teachers.models import Material
-from .models import Submission
-from .serializers import SubmissionSerializer
+from .models import Submission, TestResult, TestType
+from .serializers import SubmissionSerializer, TestTypeSerializer, TestResultSerializer
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
@@ -96,4 +96,47 @@ class SubmitAssignmentAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Material.DoesNotExist:
             return Response({"error": "Material topilmadi!"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class TestTypeListCreateAPIView(APIView):
+    permission_classes = []
+
+    def get(self, request):
+        test_types = TestType.objects.all()
+        serializer = TestTypeSerializer(test_types, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = TestTypeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TestResultListCreateAPIView(APIView):
+    permission_classes = []
+
+    def get(self, request):
+        test_results = TestResult.objects.all()
+        serializer = TestResultSerializer(test_results, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = TestResultSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TestResultDetailView(APIView):
+    permission_classes = []
+
+    def get(self, request, student_id):
+        try:
+            test_result = TestResult.objects.filter(student=student_id)
+            serializer = TestResultSerializer(test_result, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except TestResult.DoesNotExist:
+            return Response({"error": "Test natijasi topilmadi!"}, status=status.HTTP_404_NOT_FOUND)
         
