@@ -37,3 +37,4 @@ class MaterialDetailView(generics.GenericAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Material.DoesNotExist:
             return Response({"error": "Material topilmadi"}, status=status.HTTP_404_NOT_FOUND)
+        

@@ -1,0 +1,31 @@
+{
+    "regions": [
+      {
+        "name": "Toshkent",
+        "districts": [
+          "Toshkent Shahar",
+          "Angren",
+          "Bekobod",
+          "Olmaliq"
+        ]
+      },
+      {
+        "name": "Farg‘ona",
+        "districts": [
+          "Farg‘ona Shahar",
+          "Quva",
+          "Qo‘qon",
+          "Marg‘ilon"
+        ]
+      },
+      {
+        "name": "Andijon",
+        "districts": [
+          "Andijon Shahar",
+          "Asaka",
+          "Shahrixon",
+          "Xonobod"
+        ]
+      }
+    ]
+}

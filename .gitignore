@@ -44,3 +44,4 @@ htmlcov/
 /presentations/
 /news_images/
 migrations/
+db.sqlite3
