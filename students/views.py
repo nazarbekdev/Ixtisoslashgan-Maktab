@@ -75,6 +75,26 @@ class StudentProfileImageAPIView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+        
+class StudentProfileByIdAPIView(APIView):
+    permission_classes = []
+
+    def get(self, request, student_id, *args, **kwargs):
+        try:
+            student = CustomUser.objects.get(id=student_id, role='student')
+            serializer = RegisterSerializer(student, context={'request': request})
+            # Faqat first_name va last_name qaytarish uchun ma'lumotlarni filtrlaymiz
+            data = {
+                'first_name': serializer.data.get('first_name'),
+                'last_name': serializer.data.get('last_name')
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'O‘quvchi topilmadi'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)       
+        
+        
 class SubmitAssignmentAPIView(APIView):
     permission_classes = []
 
@@ -97,6 +117,28 @@ class SubmitAssignmentAPIView(APIView):
         except Material.DoesNotExist:
             return Response({"error": "Material topilmadi!"}, status=status.HTTP_404_NOT_FOUND)
         
+
+class StudentSubmitAssignmentAPIView(APIView):
+    permission_classes = []
+
+    def get(self, request, student_id, *args, **kwargs):
+        try:
+            submissions = Submission.objects.filter(student=student_id)
+            serializer = SubmissionSerializer(submissions, many=True)
+            # Faqat fayl nomlarini qaytarish uchun
+            data = serializer.data
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentRatingAPIView(APIView):
+    permission_classes = []
+
+    def get(self, request, student_id, *args, **kwargs):
+        # Keyinchalik sinf ichidagi reyting logikasi qo‘shiladi
+        return Response({'rating': 'Reyting hali aniqlanmagan'}, status=status.HTTP_200_OK)
+
 
 class TestTypeListCreateAPIView(APIView):
     permission_classes = []
