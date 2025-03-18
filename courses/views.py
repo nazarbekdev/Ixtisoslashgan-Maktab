@@ -1,5 +1,6 @@
 from rest_framework.generics import GenericAPIView
 from rest_framework.generics import ListAPIView
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -102,6 +103,20 @@ class StudentSubjectAPIView(GenericAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentSubjectByClassAndSubjectAPIView(APIView):
+    permission_classes = []
+
+    def get(self, request, class_id, subject_id, *args, **kwargs):
+        try:
+            # class_id va subject_id bo‘yicha filtrlangan o‘quvchilarni olish
+            students = StudentSubject.objects.filter(class_number=class_id, subject=subject_id)
+            serializer = StudentSubjectSerializer(students, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Bitta student ma'lumotini olish uchun
 class StudentSubjectDetailView(GenericAPIView):
