@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import StudentProfileAPIView, StudentProfileImageAPIView, SubmitAssignmentAPIView, TestTypeListCreateAPIView, TestResultListCreateAPIView, TestResultDetailView, StudentProfileByIdAPIView, StudentSubmitAssignmentAPIView, StudentRatingAPIView
+from .views import StudentProfileAPIView, StudentProfileImageAPIView, SubmitAssignmentAPIView, TestTypeListCreateAPIView, TestResultListCreateAPIView, TestResultDetailView, StudentProfileByIdAPIView, StudentSubmitAssignmentAPIView, StudentRatingAPIView, StudentSubmitAssignmentMarkGradeView, StudentSubmitAssignmentByClassSubjectView
 
 urlpatterns = [
     path('profile/', StudentProfileAPIView.as_view(), name='student-profile'),
@@ -8,6 +8,8 @@ urlpatterns = [
     path('rating/<int:student_id>/', StudentRatingAPIView.as_view(), name='student-rating'),
     path('submit-assignment/', SubmitAssignmentAPIView.as_view(), name='submit-assignment'),
     path('submit-assignment/<int:student_id>/', StudentSubmitAssignmentAPIView.as_view(), name='submit-assignment-by-student'),
+    path('submit-assignment/mark/<int:pk>/', StudentSubmitAssignmentMarkGradeView.as_view(), name='submit-assignment-mark'),
+    path('submit-assignment/mark/<int:class_number>/<int:subject>/', StudentSubmitAssignmentByClassSubjectView.as_view(), name='submit-assignment-mark-by-class-subject'),
     path('test-types/', TestTypeListCreateAPIView.as_view(), name='test-types'),
     path('test-results/', TestResultListCreateAPIView.as_view(), name='test-results'),
     path('test-results/<int:student_id>/', TestResultDetailView.as_view(), name='test-result-detail'),

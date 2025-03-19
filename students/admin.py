@@ -4,7 +4,7 @@ from .models import Submission, TestResult, TestType
 
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'student', 'material', 'file', 'submitted_at')
+    list_display = ('id', 'student', 'class_number', 'subject', 'material', 'grade', 'file', 'submitted_at')
     list_filter = ('student', 'material', 'submitted_at')
     search_fields = ('student', 'material', 'submitted_at')
 

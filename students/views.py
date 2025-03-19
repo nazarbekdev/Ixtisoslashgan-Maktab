@@ -124,14 +124,52 @@ class StudentSubmitAssignmentAPIView(APIView):
     def get(self, request, student_id, *args, **kwargs):
         try:
             submissions = Submission.objects.filter(student=student_id)
-            serializer = SubmissionSerializer(submissions, many=True)
-            # Faqat fayl nomlarini qaytarish uchun
-            data = serializer.data
-            return Response(data, status=status.HTTP_200_OK)
+            serializer = SubmissionSerializer(submissions, many=True, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class StudentSubmitAssignmentByClassSubjectView(APIView):
+    permission_classes = []
+    
+    def get(self, request, class_number, subject, *args, **kwargs):
+        try:
+            # Class_number va subject bo‘yicha topshiriqlarni olish
+            submissions = Submission.objects.filter(class_number=class_number, subject=subject)
+            serializer = SubmissionSerializer(submissions, many=True, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class StudentSubmitAssignmentMarkGradeView(APIView):
+    permission_classes = []
+    
+    def patch(self, request, pk, *args, **kwargs):
+        try:
+            submission = Submission.objects.get(pk=pk)
+            grade = request.data.get('grade')
+            
+            # grade ni int ga aylantirish
+            try:
+                grade = int(grade)  # Stringdan int ga aylantirish
+            except (ValueError, TypeError):
+                return Response({'error': 'Baho butun son bo‘lishi kerak'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # grade ni tekshirish
+            if grade < 1 or grade > 5:
+                return Response({'error': 'Baho 1-5 oralig‘ida bo‘lishi kerak'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            submission.grade = grade
+            submission.save()
+            serializer = SubmissionSerializer(submission, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Submission.DoesNotExist:
+            return Response({'error': 'Topshiriq topilmadi'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
 class StudentRatingAPIView(APIView):
     permission_classes = []
 
