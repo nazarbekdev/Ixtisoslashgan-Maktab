@@ -1,7 +1,7 @@
 from django.db import models
 from accounts.models import CustomUser
 from teachers.models import Material
-from courses.models import Subject
+from courses.models import Subject, Class
 
 
 class TestType(models.Model):
@@ -17,8 +17,11 @@ class TestType(models.Model):
 
 class Submission(models.Model):
     student = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    class_number = models.ForeignKey(Class, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
     file = models.FileField(upload_to='media/submissions/')
+    grade = models.IntegerField(default=0)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
