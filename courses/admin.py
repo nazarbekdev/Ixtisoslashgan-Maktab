@@ -18,7 +18,7 @@ class OfflineStudentAdmin(admin.ModelAdmin):
     
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'video_url', 'lecture_file', 'presentation_file', 'subject', 'class_level']
+    list_display = ['id', 'teacher', 'title', 'video_url', 'lecture_file', 'presentation_file', 'subject', 'class_level']
     
 @admin.register(Test)
 class TestAdmin(admin.ModelAdmin):
