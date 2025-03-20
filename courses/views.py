@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Class, Subject, OfflineStudent, Topic, Test, StudentSubject, TeacherCLass, TeacherExpertise
-from .serializers import ClassSerializer, SubjectSerializer, OfflineStudentSerializer, TopicSerializer, TestSerializer, StudentSubjectSerializer, TeacherClassSerializer, TeacherExpertiseSerializer
+from .serializers import ClassSerializer, SubjectSerializer, OfflineStudentSerializer, TopicSerializer, TestSerializer, \
+    StudentSubjectSerializer, TeacherClassSerializer, TeacherExpertiseSerializer
+
 
 # Class uchun API
 class ClassListCreateAPIView(GenericAPIView):
@@ -27,6 +29,7 @@ class ClassListCreateAPIView(GenericAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # Subject uchun API
 class SubjectListCreateAPIView(GenericAPIView):
     permission_classes = []
@@ -44,10 +47,11 @@ class SubjectListCreateAPIView(GenericAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 # Topic uchun API
 class TopicListAPIView(ListAPIView):
-    permission_classes = []  
+    permission_classes = []
     serializer_class = TopicSerializer
 
     def get_queryset(self):
@@ -55,9 +59,10 @@ class TopicListAPIView(ListAPIView):
         class_id = self.request.query_params.get('class_id')
         return Topic.objects.filter(subject_id=subject_id, class_level_id=class_id)
 
+
 # o'zgaradi...
 class TestListAPIView(ListAPIView):
-    permission_classes = []  
+    permission_classes = []
     serializer_class = TestSerializer
 
     def get_queryset(self):
@@ -65,12 +70,13 @@ class TestListAPIView(ListAPIView):
         class_id = self.request.query_params.get('class_id')
         return Test.objects.filter(subject_id=subject_id, class_level_id=class_id)
 
+
 # OfflineStudent uchun API
 class OfflineStudentAPIView(GenericAPIView):
     queryset = OfflineStudent.objects.all()
     serializer_class = OfflineStudentSerializer
     permission_classes = []
-    
+
     def get(self, request, *args, **kwargs):
         # GET so'rov - barcha OfflineStudent'larni ro'yxat qilish
         students = self.get_queryset()
@@ -84,13 +90,13 @@ class OfflineStudentAPIView(GenericAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class StudentSubjectAPIView(GenericAPIView):
     queryset = StudentSubject.objects.all()
     serializer_class = StudentSubjectSerializer
     permission_classes = []
-    
+
     def get(self, request, *args, **kwargs):
         # GET so'rov - barcha StudentSubject'larni ro'yxat qilish
         students = self.get_queryset()
@@ -133,11 +139,12 @@ class StudentSubjectDetailView(GenericAPIView):
         except StudentSubject.DoesNotExist:
             return Response({"error": "Student subject topilmadi"}, status=status.HTTP_404_NOT_FOUND)
 
+
 class TeacherClassAPIView(GenericAPIView):
     queryset = TeacherCLass.objects.all()
     serializer_class = TeacherClassSerializer
     permission_classes = []
-    
+
     def get(self, request, *args, **kwargs):
         # GET so'rov - barcha TeacherSubject'larni ro'yxat qilish
         teachers = self.get_queryset()
@@ -157,7 +164,7 @@ class TeacherExpertiseAPIView(GenericAPIView):
     queryset = TeacherExpertise.objects.all()
     serializer_class = TeacherExpertiseSerializer
     permission_classes = []
-    
+
     def get(self, request, *args, **kwargs):
         # GET so'rov - barcha TeacherExpertise'larni ro'yxat qilish
         teachers = self.get_queryset()
@@ -185,4 +192,3 @@ class TeacherExpertiseDetailView(GenericAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except TeacherExpertise.DoesNotExist:
             return Response({"error": "Teacher expertise topilmadi"}, status=status.HTTP_404_NOT_FOUND)
-        

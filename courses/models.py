@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import CustomUser
 
+
 class Class(models.Model):
     name = models.CharField(max_length=50)
 
@@ -75,19 +76,21 @@ class TeacherCLass(models.Model):
         
 
 class Topic(models.Model):
+    teacher = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1, related_name='teacher_topics')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='topics')
     class_level = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='topics')
     title = models.CharField(max_length=100)
     video_url = models.URLField(blank=True, null=True, )
     lecture_file = models.FileField(upload_to='media/lectures/', blank=True, null=True)
     presentation_file = models.FileField(upload_to='media/presentations/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
     class Meta:
-        verbose_name = 'Mavzu'
-        verbose_name_plural = 'Mavzular'
+        verbose_name = 'Yuklangan material'
+        verbose_name_plural = 'Yuklangan materiallar'
 
 
 # o'zgaradi...
