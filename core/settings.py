@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'students',
     'teachers',
     'news',
+    'chats',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt', 

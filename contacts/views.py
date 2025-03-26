@@ -7,7 +7,8 @@ from .serializers import ContactRequestSerializer
 class ContactRequestListAPIView(ListAPIView):
     queryset = ContactRequest.objects.all()
     serializer_class = ContactRequestSerializer
-
+    permission_classes = []
+    
     def post(self, request, *args, **kwargs):
         # POST so'rov - yangi ContactRequest yaratish
         serializer = self.get_serializer(data=request.data)

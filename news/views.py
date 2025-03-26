@@ -1,5 +1,6 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Category, News
 from .serializers import CategorySerializer, NewsSerializer
@@ -8,10 +9,12 @@ from .serializers import CategorySerializer, NewsSerializer
 class CategoryListAPIView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = []
 
 # Yangiliklar ro'yxati (qidiruv va kategoriyaga filtr)
 class NewsListAPIView(ListAPIView):
     serializer_class = NewsSerializer
+    permission_classes = []
 
     def get_queryset(self):
         queryset = News.objects.all()
@@ -28,12 +31,15 @@ class NewsListAPIView(ListAPIView):
 # Mashhur yangiliklar (eng ko'p ko'rilgan 3 ta)
 class PopularNewsAPIView(ListAPIView):
     serializer_class = NewsSerializer
+    permission_classes = []
 
     def get_queryset(self):
         return News.objects.order_by('-views')[:3]
 
 # Yangilik detallari
 class NewsDetailAPIView(APIView):
+    permission_classes = []
+
     def get(self, request, pk):
         try:
             news = News.objects.get(pk=pk)
