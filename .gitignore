@@ -45,3 +45,5 @@ htmlcov/
 /news_images/
 migrations/
 db.sqlite3
+.env
+.env
