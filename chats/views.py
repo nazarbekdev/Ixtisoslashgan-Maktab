@@ -21,21 +21,35 @@ class ChatAPIView(APIView):
             return Response({'error': 'Xabar bo‘sh bo‘lmasligi kerak'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # OpenAI 1.68.2 uchun yangi interfeys
+            # Foydalanuvchining oldingi xabarlarini olish
+            previous_messages = ChatMessage.objects.filter(user=request.user.username).order_by('-timestamp')[:2]
+
+            # Open AI API uchun messages ro‘yxatini tayyorlash
+            messages = [
+                {
+                    "role": "system",
+                    "content": "Siz ixtisoslashgan maktab platformasi uchun yordamchi AI’siz. Foydalanuvchilarning savollariga aniq va foydali javoblar bering."
+                }
+            ]
+
+            # Oldingi xabarlarni qo‘shish
+            for msg in previous_messages:
+                messages.append({"role": "user", "content": msg.message})
+                messages.append({"role": "assistant", "content": msg.reply})
+
+            # Joriy foydalanuvchi xabarini qo‘shish
+            messages.append({"role": "user", "content": message})
+
+            # OpenAI API’ga so‘rov yuborish
             response = openai.chat.completions.create(
                 model="gpt-4o",
-                messages=[
-                    {"role": "system",
-                     "content": "Siz ixtisoslashgan maktab platformasi uchun yordamchi AI’siz. Foydalanuvchilarning savollariga aniq va foydali javoblar bering."},
-                    {"role": "user", "content": message},
-                ],
-                max_tokens=150,
-                temperature=0.7,
+                messages=messages,
             )
-            # Yangi javob formati
+
+            # Javobni olish
             reply = response.choices[0].message.content.strip()
 
-            # Foydalanuvchi nomini request.user dan olish
+            # Xabarni bazaga saqlash
             chat_message = ChatMessage.objects.create(
                 user=request.user.username if request.user.is_authenticated else "Anonymous",
                 message=message,
@@ -48,9 +62,9 @@ class ChatAPIView(APIView):
 
 
 class ChatHistoryAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # Faqat autentifikatsiyadan o‘tgan foydalanuvchilar uchun
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        messages = ChatMessage.objects.all().order_by('timestamp')
+        messages = ChatMessage.objects.filter(user=request.user.username).order_by('timestamp')
         serializer = ChatMessageSerializer(messages, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
