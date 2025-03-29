@@ -27,13 +27,14 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # /api/token/
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # /api/token/refresh/
-    path('auth/', include('accounts.urls')), # accounts uchun URL’lar
-    path('courses/', include('courses.urls')), # courses uchun URL’lar
-    path('news/', include('news.urls')), # news uchun URL’lar
-    path('contacts/', include('contacts.urls')), # contacts uchun URL’lar
-    path('students/', include('students.urls')), # students uchun URL’lar
-    path('teachers/', include('teachers.urls')), # teachers uchun URL’lar 
-    path('chats/', include('chats.urls')), # chats uchun URL’lar
+    path('auth/', include('accounts.urls')),  # accounts uchun URL’lar
+    path('courses/', include('courses.urls')),  # courses uchun URL’lar
+    path('news/', include('news.urls')),  # news uchun URL’lar
+    path('contacts/', include('contacts.urls')),  # contacts uchun URL’lar
+    path('students/', include('students.urls')),  # students uchun URL’lar
+    path('teachers/', include('teachers.urls')),  # teachers uchun URL’lar
+    path('chats/', include('chats.urls')),  # chats uchun URL’lar
+    path('tests/', include('tests.urls')),  # tests uchun URL’lar
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
