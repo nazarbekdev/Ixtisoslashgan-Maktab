@@ -38,7 +38,7 @@ class Variant(models.Model):
 
 
 class Question(models.Model):
-    class_number = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='questions')
+    class_number = models.ForeignKey(Class, on_delete=models.CASCADE, null=True, blank=True, default=None, related_name='questions')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='questions')
     test_type = models.ForeignKey(TestType, on_delete=models.CASCADE, default=1, related_name='questions')
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE, related_name='questions', default=1)
