@@ -1,7 +1,7 @@
 from django.db import models
-
 from accounts.models import CustomUser
 from courses.models import Class, Subject
+from students.models import TestType
 
 
 class Material(models.Model):
@@ -10,8 +10,9 @@ class Material(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='materials')
     task_type = models.CharField(max_length=10, choices=(('Sinf', 'Sinf'), ('Kurs', 'Kurs')))
     topic = models.CharField(max_length=255)
-    lecture_file = models.FileField(upload_to='media/lectures/', null=True, blank=True)
+    lecture_file = models.FileField(upload_to='lectures/', null=True, blank=True)
     presentation_file = models.FileField(upload_to='presentations/', null=True, blank=True)
+    test_file = models.FileField(upload_to='test/', null=True, blank=True)
     video_link = models.URLField(null=True, blank=True)
     deadline = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -33,10 +34,11 @@ class Test(models.Model):
     ]
 
     teacher = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tests')
-    class_number = models.ForeignKey(Class, on_delete=models.CASCADE)
+    test_type = models.ForeignKey(TestType, on_delete=models.CASCADE, default=1, related_name='tests')
+    class_number = models.ForeignKey(Class, on_delete=models.CASCADE, null=True, blank=True, related_name='tests')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     topic = models.CharField(max_length=200)
-    quarter = models.CharField(max_length=20, choices=QUARTER_CHOICES)
+    quarter = models.CharField(max_length=20, choices=QUARTER_CHOICES, null=True, blank=True)
     test_file = models.FileField(upload_to='tests/')
     created_at = models.DateTimeField(auto_now_add=True)
 

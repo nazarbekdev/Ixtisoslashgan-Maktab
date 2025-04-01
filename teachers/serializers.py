@@ -11,8 +11,8 @@ class MaterialSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Material
-        fields = ['id', 'teacher', 'class_number', 'subject', 'task_type', 'topic', 'lecture_file', 'presentation_file', 'video_link', 'deadline', 'created_at']
-  
+        fields = '__all__'
+
         
 class MaterialNameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,20 +38,19 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 
 class TestSerializer(serializers.ModelSerializer):
-    class_number = serializers.PrimaryKeyRelatedField(queryset=Class.objects.all())
-    subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all())
-    test_file = serializers.FileField()
-
     class Meta:
         model = Test
-        fields = ['id', 'teacher', 'class_number', 'subject', 'topic', 'quarter', 'test_file', 'created_at']
+        fields = ['id', 'teacher', 'test_type', 'class_number', 'subject', 'topic', 'quarter', 'test_file', 'created_at']
 
-    def to_representation(self, instance):
-        # Fayl URL’ini qaytarish uchun
-        representation = super().to_representation(instance)
-        request = self.context.get('request')
-        if instance.test_file and request:
-            representation['test_file'] = request.build_absolute_uri(instance.test_file.url)
-        else:
-            representation['test_file'] = None
-        return representation
+    def validate(self, data):
+        test_type = data.get('test_type')
+        class_number = data.get('class_number')
+        quarter = data.get('quarter')
+
+        # Test turi "Fanga oid" bo‘lsa, class_number va quarter majburiy
+        if test_type.name == 'Fanga oid':
+            if not class_number:
+                raise serializers.ValidationError("Fanga oid testlar uchun sinf tanlash majburiy!")
+            if not quarter:
+                raise serializers.ValidationError("Fanga oid testlar uchun chorak tanlash majburiy!")
+        return data
