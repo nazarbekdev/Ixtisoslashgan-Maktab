@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from .models import Question, QuestionType, TestFile, TestControl, Variant
+from .models import Question, QuestionType, TestFile, TestControl, Variant, QuestionDifficulty
 
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'class_number', 'subject', 'text', 'variant', 'created_at')
+    list_display = ('id', 'test_type', 'class_number', 'subject', 'text', 'correct_answer', 'difficulty','created_at')
     list_filter = ('class_number', 'subject', 'variant')
     search_fields = ('text',)
 
@@ -27,4 +27,9 @@ class QuestionTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Variant)
 class VariantAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+
+
+@admin.register(QuestionDifficulty)
+class QuestionDifficultyAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
