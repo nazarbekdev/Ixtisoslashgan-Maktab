@@ -5,7 +5,7 @@ from .models import Question, QuestionType, TestFile, TestControl, Variant, Ques
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'test_type', 'class_number', 'subject', 'text', 'correct_answer', 'difficulty','created_at')
+    list_display = ('id', 'material', 'test_type', 'class_number', 'subject', 'text', 'correct_answer', 'difficulty', 'created_at')
     list_filter = ('class_number', 'subject', 'variant')
     search_fields = ('text',)
 

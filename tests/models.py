@@ -1,6 +1,5 @@
 from django.db import models
 from courses.models import Class, Subject
-from students.models import TestType
 from teachers.models import Material
 
 
@@ -61,7 +60,7 @@ class Question(models.Model):
     class_number = models.ForeignKey(Class, on_delete=models.CASCADE, null=True, blank=True, related_name='questions')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='questions')
     quarter = models.CharField(max_length=20, choices=QUARTER_CHOICES, null=True, blank=True)
-    test_type = models.ForeignKey(TestType, on_delete=models.CASCADE, default=1, related_name='questions')
+    test_type = models.ForeignKey('students.TestType', on_delete=models.CASCADE, default=1, related_name='questions')
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE, related_name='questions')
     text = models.TextField()
     correct_answer = models.TextField()
@@ -84,7 +83,7 @@ class Question(models.Model):
 
 class TestControl(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    test_type = models.ForeignKey(TestType, on_delete=models.CASCADE, default=1)
+    test_type = models.ForeignKey('students.TestType', on_delete=models.CASCADE, default=1)
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE, default=1)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE, default=1)
     limit = models.PositiveIntegerField(default=1)
