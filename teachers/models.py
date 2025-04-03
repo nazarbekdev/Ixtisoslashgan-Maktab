@@ -1,7 +1,6 @@
 from django.db import models
 from accounts.models import CustomUser
 from courses.models import Class, Subject
-from students.models import TestType
 
 
 class Material(models.Model):
@@ -34,7 +33,7 @@ class Test(models.Model):
     ]
 
     teacher = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tests')
-    test_type = models.ForeignKey(TestType, on_delete=models.CASCADE, default=1, related_name='tests')
+    test_type = models.ForeignKey('students.TestType', on_delete=models.CASCADE, default=1, related_name='tests')
     class_number = models.ForeignKey(Class, on_delete=models.CASCADE, null=True, blank=True, related_name='tests')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     topic = models.CharField(max_length=200)
