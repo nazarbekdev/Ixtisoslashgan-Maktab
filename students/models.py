@@ -67,6 +67,8 @@ class TestResultDetail(models.Model):
     user_answer = models.TextField(null=True, blank=True)  # Foydalanuvchi javobi
     is_correct = models.BooleanField()  # To‘g‘ri yoki noto‘g‘ri
     score = models.FloatField()  # Savolning balli (agar to‘g‘ri bo‘lsa, savolning balli, aks holda 0)
+    question_type = models.CharField(max_length=50)  # Savol turi (masalan, "yopiq" yoki "ochiq")
+    difficulty = models.CharField(max_length=50)  # Savol darajasi (masalan, "Q", "M", "B")
 
     def __str__(self):
         return f"Detail for {self.test_result} - Question {self.question.id}"

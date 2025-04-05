@@ -8,7 +8,7 @@ from teachers.models import Material
 from .models import Submission, TestResult, TestType
 from .serializers import SubmissionSerializer, TestTypeSerializer, TestResultSerializer
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
+from django.db.models import Avg
 import logging
 
 # Logger sozlamasi
@@ -178,14 +178,6 @@ class StudentSubmitAssignmentMarkGradeView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class StudentRatingAPIView(APIView):
-    permission_classes = []
-
-    def get(self, request, student_id, *args, **kwargs):
-        # Keyinchalik sinf ichidagi reyting logikasi qo‘shiladi
-        return Response({'rating': 'Reyting hali aniqlanmagan'}, status=status.HTTP_200_OK)
-
-
 class TestTypeListCreateAPIView(APIView):
     permission_classes = []
 
@@ -314,3 +306,32 @@ class TestResultDetailView(APIView):
         except Exception as e:
             logger.error(f"TestResultDetailView GET xatosi: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class StudentReytingView(APIView):
+    permission_classes = []
+
+    def get(self, request, student_id):
+        try:
+            # Berilgan student_id bo‘yicha barcha submission’larni olish va fanlar bo‘yicha guruhlash
+            ratings = (
+                Submission.objects
+                .filter(student=student_id)
+                .values('subject__id')  # Fanlar bo‘yicha guruhlash (subject__id)
+                .annotate(average_grade=Avg('grade'))  # Har bir fan bo‘yicha o‘rtacha grade
+                .order_by('subject__id')  # Tartib uchun
+            )
+
+            # Natijani kerakli formatga keltirish
+            ratings_dict = {str(rating['subject__id']): float(rating['average_grade']) for rating in ratings}
+
+            # Yakuniy javobni tayyorlash
+            response_data = {
+                'student_id': student_id,
+                'ratings': ratings_dict
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"StudentReytingView xatosi: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -26,7 +26,7 @@ class TestTypeSerializer(serializers.ModelSerializer):
 class TestResultDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestResultDetail
-        fields = ['question', 'user_answer', 'is_correct', 'score']
+        fields = ['question', 'user_answer', 'is_correct', 'score', 'question_type', 'difficulty']
 
 
 class TestResultSerializer(serializers.ModelSerializer):
@@ -38,7 +38,9 @@ class TestResultSerializer(serializers.ModelSerializer):
                   'is_active', 'created_at', 'details']
 
     def create(self, validated_data):
+        # `details` ma'lumotlarini olish va olib tashlash
         details_data = validated_data.pop('details', [])
+        # TestResult obyektini yaratish
         test_result = TestResult.objects.create(**validated_data)
 
         # Har bir savol bo‘yicha natijani saqlash
@@ -46,3 +48,28 @@ class TestResultSerializer(serializers.ModelSerializer):
             TestResultDetail.objects.create(test_result=test_result, **detail_data)
 
         return test_result
+
+    def update(self, instance, validated_data):
+        # `details` ma'lumotlarini olish va olib tashlash
+        details_data = validated_data.pop('details', [])
+
+        # TestResult obyektini yangilash
+        instance.student = validated_data.get('student', instance.student)
+        instance.subject = validated_data.get('subject', instance.subject)
+        instance.test_type = validated_data.get('test_type', instance.test_type)
+        instance.variant = validated_data.get('variant', instance.variant)
+        instance.quarter = validated_data.get('quarter', instance.quarter)
+        instance.correct = validated_data.get('correct', instance.correct)
+        instance.score = validated_data.get('score', instance.score)
+        instance.percentage = validated_data.get('percentage', instance.percentage)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
+        instance.save()
+
+        # Eski `TestResultDetail` larni o‘chirish (agar yangilash kerak bo‘lsa)
+        instance.details.all().delete()
+
+        # Yangi `TestResultDetail` larni qo‘shish
+        for detail_data in details_data:
+            TestResultDetail.objects.create(test_result=instance, **detail_data)
+
+        return instance
