@@ -25,6 +25,8 @@ class CustomUser(AbstractUser):
     school = models.CharField(max_length=100, blank=True, null=True, help_text="Talaba uchun maktab")
     class_id = models.ForeignKey('courses.Class', on_delete=models.CASCADE, null=True, blank=True, related_name='users', help_text="Talaba uchun sinf")
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True, help_text="Talaba uchun jins")
+    password_reset_token = models.CharField(max_length=100, blank=True, null=True,
+                                            help_text="Parol tiklash uchun vaqtinchalik token")
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name

@@ -1,3 +1,4 @@
+# views.py
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -5,34 +6,19 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .serializers import RegisterSerializer, LoginSerializer, AllUserSerializer
 from .models import CustomUser
+import uuid
+import requests
+
+# Telegram bot tokeni va chat ID (sozlamalarda saqlanadi)
+TELEGRAM_BOT_TOKEN = "7770078413:AAG51717kVpS-0P_-s3yqTvEfKsz_b2WUl8"  # Telegram bot tokeningizni kiriting
+TELEGRAM_BOT_URL = f"https://t.me/ai_edu_reset_password_bot"  # Botning URL manzili
 
 
 class RegisterAPIView(GenericAPIView):
     serializer_class = RegisterSerializer
-    permission_classes = () 
+    permission_classes = ()
 
     def post(self, request, *args, **kwargs):
-        """
-        Register a new user (Teacher or Student).
-
-        POST request with the following parameters:
-        - username (string): Phone number or email (required)
-        - password (string): User password (required)
-        - email (string): Optional email
-        - first_name (string): User first name
-        - last_name (string): User last name
-        - phone_number (string): User phone number
-        - role (string): 'teacher' or 'student' (required)
-        - subject (string): Teacher subject (required for teachers)
-        - region (string): Student region (required for students)
-        - school (string): Student school (required for students)
-        - class_id (string): Student class (required for students)
-        - gender (string): Student gender (required for students)
-
-        Returns:
-        - 201: Success with JWT tokens and user details
-        - 400: Validation errors
-        """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -48,21 +34,9 @@ class RegisterAPIView(GenericAPIView):
 
 class LoginAPIView(GenericAPIView):
     serializer_class = LoginSerializer
-    permission_classes = ()  # Autentifikatsiya talab qilinmaydi
+    permission_classes = ()
 
     def post(self, request, *args, **kwargs):
-        """
-        Authenticate a user and return JWT tokens.
-
-        POST request with the following parameters:
-        - username (string): Phone number or email (required)
-        - password (string): User password (required)
-
-        Returns:
-        - 200: Success with JWT tokens and user details
-        - 401: Invalid credentials
-        - 400: Validation errors
-        """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             username = serializer.validated_data['username']
@@ -86,13 +60,60 @@ class AllUserAPIView(GenericAPIView):
     permission_classes = []
 
     def get(self, request, *args, **kwargs):
-        """
-        Get all users (Teachers and Students).
-
-        Returns:
-        - 200: Success with user details
-        """
         users = self.get_queryset()
         serializer = self.get_serializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+
+class PasswordResetRequestAPIView(GenericAPIView):
+    permission_classes = ()
+
+    """
+    Foydalanuvchi telefon raqamini kiritadi va Telegram bot orqali parol tiklash jarayonini boshlaydi.
+    """
+
+    def post(self, request, *args, **kwargs):
+        phone_number = request.data.get('phone_number')
+        try:
+            user = CustomUser.objects.get(username=phone_number)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'Bu telefon raqami bilan foydalanuvchi topilmadi.'},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        # Vaqtinchalik token generatsiya qilish
+        token = str(uuid.uuid4())
+        user.password_reset_token = token
+        user.save()
+
+        # Telegram bot linkini qaytarish
+        telegram_link = f"{TELEGRAM_BOT_URL}?start={token}"
+        return Response({
+            'message': 'Telegram bot orqali parolni tiklash uchun quyidagi linkka o‘ting.',
+            'telegram_link': telegram_link,
+            'token': token  # Tokenni frontendda ko‘rsatish uchun
+        }, status=status.HTTP_200_OK)
+
+
+class PasswordResetConfirmAPIView(GenericAPIView):
+    permission_classes = ()
+
+    """
+    Telegram bot orqali yangi parolni tasdiqlash va o‘rnatish.
+    """
+
+    def post(self, request, *args, **kwargs):
+        token = request.data.get('token')
+        new_password = request.data.get('new_password')
+
+        try:
+            user = CustomUser.objects.get(password_reset_token=token)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'Noto‘g‘ri token yoki foydalanuvchi topilmadi.'},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        # Yangi parolni o‘rnatish
+        user.set_password(new_password)
+        user.password_reset_token = None  # Tokenni o‘chirish
+        user.save()
+
+        return Response({'message': 'Parol muvaffaqiyatli yangilandi.'}, status=status.HTTP_200_OK)
