@@ -91,19 +91,3 @@ class Topic(models.Model):
     class Meta:
         verbose_name = 'Yuklangan material'
         verbose_name_plural = 'Yuklangan materiallar'
-
-
-# o'zgaradi...
-class Test(models.Model):
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='tests')
-    class_level = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='tests')
-    title = models.CharField(max_length=100)
-    questions = models.JSONField()  # Hozircha savollar JSON formatida saqlanadi, ammo alohida model qilinadi (TestQuestion modeli)
-
-    def __str__(self):
-        return self.title
-    
-    class Meta:
-        verbose_name = 'Test'
-        verbose_name_plural = 'Testlar'
-    

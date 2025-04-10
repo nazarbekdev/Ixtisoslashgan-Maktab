@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Submission, TestResult, TestType, TestResultDetail
+from .models import Submission, TestResult, TestType, TestResultDetail, Feedback
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
@@ -73,3 +73,10 @@ class TestResultSerializer(serializers.ModelSerializer):
             TestResultDetail.objects.create(test_result=instance, **detail_data)
 
         return instance
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Feedback
+        fields = ['id', 'student', 'question_id', 'question_text', 'user_answer', 'correct_answer', 'feedback_text',
+                  'created_at']

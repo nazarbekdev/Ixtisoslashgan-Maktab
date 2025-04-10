@@ -1,3 +1,4 @@
+from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -5,14 +6,17 @@ from rest_framework.permissions import IsAuthenticated
 from accounts.models import CustomUser
 from accounts.serializers import RegisterSerializer
 from teachers.models import Material
-from .models import Submission, TestResult, TestType
-from .serializers import SubmissionSerializer, TestTypeSerializer, TestResultSerializer
+from .models import Submission, TestResult, TestType, Feedback
+from .serializers import SubmissionSerializer, TestTypeSerializer, TestResultSerializer, FeedbackSerializer
 from django.core.files.storage import default_storage
 from django.db.models import Avg
 import logging
+import os
+import openai
 
-# Logger sozlamasi
 logger = logging.getLogger(__name__)
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 class StudentProfileAPIView(APIView):
@@ -335,3 +339,74 @@ class StudentReytingView(APIView):
         except Exception as e:
             logger.error(f"StudentReytingView xatosi: {str(e)}")
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FeedbackAPIView(GenericAPIView):
+    permission_classes = ()  # Agar autentifikatsiya kerak bo‘lsa, o‘zgartirishingiz mumkin
+    serializer_class = FeedbackSerializer  # Serializer sinfini aniqlash
+
+    def post(self, request, *args, **kwargs):
+        incorrect_answers = request.data.get('incorrect_answers', [])
+        feedback_list = []
+
+        for item in incorrect_answers:
+            question_text = item.get('question_text')
+            user_answer = item.get('user_answer')
+            correct_answer = item.get('correct_answer')
+            question_id = item.get('question_id')
+
+            # OpenAI API’dan feedback so‘rash
+            prompt = (
+                f"Foydalanuvchi quyidagi savolga noto‘g‘ri javob berdi:\n"
+                f"Savol: {question_text}\n"
+                f"Foydalanuvchi javobi: {user_answer}\n"
+                f"To‘g‘ri javob: {correct_answer}\n"
+                f"Foydalanuvchiga xatosi haqida tushunarli va foydali feedback bering. Feedback o‘zbek tilida bo‘lsin."
+            )
+
+            try:
+                response = openai.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system",
+                         "content": "Siz o‘quvchilarga feedback beruvchi yordamchisiz. Feedback o‘zbek tilida bo‘lishi"
+                                    " kerak. Salom berish shart emas! Faqat savolga qisqa va aniq javob "
+                                    "berish bilan chegaralaning!!!"},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=150,
+                    temperature=0.7
+                )
+                feedback_text = response.choices[0].message.content.strip()
+            except Exception as e:
+                feedback_text = f"Feedback generatsiya qilishda xato yuz berdi: {str(e)}"
+
+            # Feedback’ni bazaga saqlash yoki yangilash
+            feedback, created = Feedback.objects.get_or_create(
+                student=request.user,
+                question_id=question_id,
+                defaults={
+                    'question_text': question_text,
+                    'user_answer': user_answer,
+                    'correct_answer': correct_answer,
+                    'feedback_text': feedback_text
+                }
+            )
+
+            # Agar feedback allaqachon mavjud bo‘lsa, uni yangilash
+            if not created:
+                feedback.question_text = question_text
+                feedback.user_answer = user_answer
+                feedback.correct_answer = correct_answer
+                feedback.feedback_text = feedback_text
+                feedback.save()
+
+            feedback_list.append({
+                'question_id': question_id,
+                'question_text': question_text,
+                'user_answer': user_answer,
+                'correct_answer': correct_answer,
+                'feedback': feedback_text
+            })
+
+        return Response({'feedback': feedback_list}, status=status.HTTP_200_OK)

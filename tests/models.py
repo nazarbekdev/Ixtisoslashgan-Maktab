@@ -79,6 +79,9 @@ class Question(models.Model):
     class Meta:
         verbose_name = "Savol"
         verbose_name_plural = "Savollar"
+        indexes = [
+                    models.Index(fields=['test_type', 'subject', 'variant', 'question_type', 'class_number', 'quarter']),
+                ]
 
 
 class TestControl(models.Model):
@@ -86,6 +89,7 @@ class TestControl(models.Model):
     test_type = models.ForeignKey('students.TestType', on_delete=models.CASCADE, default=1)
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE, default=1)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE, default=1)
+    difficulty = models.ForeignKey(QuestionDifficulty, on_delete=models.CASCADE, default=1)
     limit = models.PositiveIntegerField(default=1)
 
     def __str__(self):
@@ -94,3 +98,6 @@ class TestControl(models.Model):
     class Meta:
         verbose_name = 'Test Kontrol'
         verbose_name_plural = 'Test Kontrol'
+        indexes = [
+            models.Index(fields=['subject', 'test_type', 'variant']),
+        ]

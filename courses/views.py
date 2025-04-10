@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .models import Class, Subject, OfflineStudent, Topic, Test, StudentSubject, TeacherCLass, TeacherExpertise
-from .serializers import ClassSerializer, SubjectSerializer, OfflineStudentSerializer, TopicSerializer, TestSerializer, \
+from .models import Class, Subject, OfflineStudent, Topic, StudentSubject, TeacherCLass, TeacherExpertise
+from .serializers import ClassSerializer, SubjectSerializer, OfflineStudentSerializer, TopicSerializer, \
     StudentSubjectSerializer, TeacherClassSerializer, TeacherExpertiseSerializer
 
 
@@ -58,17 +58,6 @@ class TopicListAPIView(ListAPIView):
         subject_id = self.request.query_params.get('subject_id')
         class_id = self.request.query_params.get('class_id')
         return Topic.objects.filter(subject_id=subject_id, class_level_id=class_id)
-
-
-# o'zgaradi...
-class TestListAPIView(ListAPIView):
-    permission_classes = []
-    serializer_class = TestSerializer
-
-    def get_queryset(self):
-        subject_id = self.request.query_params.get('subject_id')
-        class_id = self.request.query_params.get('class_id')
-        return Test.objects.filter(subject_id=subject_id, class_level_id=class_id)
 
 
 # OfflineStudent uchun API

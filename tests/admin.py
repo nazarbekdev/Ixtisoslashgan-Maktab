@@ -17,7 +17,9 @@ class TestFileAdmin(admin.ModelAdmin):
 
 @admin.register(TestControl)
 class TestControlAdmin(admin.ModelAdmin):
-    list_display = ('id', 'subject', 'test_type', 'question_type', 'limit')
+    list_display = ('subject', 'test_type', 'question_type', 'variant', 'limit')
+    list_filter = ('subject', 'test_type', 'question_type', 'variant')
+    search_fields = ('subject__name', 'test_type__name')
 
 
 @admin.register(QuestionType)

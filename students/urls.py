@@ -2,7 +2,7 @@ from django.urls import path
 from .views import StudentProfileAPIView, StudentProfileImageAPIView, SubmitAssignmentAPIView, \
     TestTypeListCreateAPIView, TestResultListCreateAPIView, TestResultDetailView, StudentProfileByIdAPIView, \
     StudentSubmitAssignmentAPIView, StudentSubmitAssignmentMarkGradeView, \
-    StudentSubmitAssignmentByClassSubjectView,  StudentReytingView
+    StudentSubmitAssignmentByClassSubjectView,  StudentReytingView, FeedbackAPIView
 
 urlpatterns = [
     path('profile/', StudentProfileAPIView.as_view(), name='student-profile'),
@@ -19,4 +19,5 @@ urlpatterns = [
     path('test-results/', TestResultListCreateAPIView.as_view(), name='test-results'),
     path('test-results/<int:student_id>/', TestResultDetailView.as_view(), name='test-result-detail'),
     path('reyting/<int:student_id>/', StudentReytingView.as_view(), name='student-reyting'),
+    path('feedback/', FeedbackAPIView.as_view(), name='feedback'),
 ]

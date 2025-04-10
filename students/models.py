@@ -47,9 +47,9 @@ class TestResult(models.Model):
     test_type = models.ForeignKey('TestType', on_delete=models.CASCADE, related_name='results')
     variant = models.ForeignKey('tests.Variant', on_delete=models.CASCADE, null=True, related_name='variant_results')
     quarter = models.CharField(max_length=20, choices=QUARTER_CHOICES, null=True, blank=True)
-    correct = models.CharField(max_length=10)  # To‘g‘ri javoblar soni (masalan, "5/10")
-    score = models.CharField(max_length=10)  # Umumiy ball (masalan, "15.0/20.0")
-    percentage = models.FloatField(null=True, blank=True)  # Foiz (masalan, 75.0)
+    correct = models.CharField(max_length=10)
+    score = models.CharField(max_length=10)
+    percentage = models.FloatField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -64,11 +64,27 @@ class TestResult(models.Model):
 class TestResultDetail(models.Model):
     test_result = models.ForeignKey(TestResult, on_delete=models.CASCADE, related_name='details')
     question = models.ForeignKey('tests.Question', on_delete=models.CASCADE, related_name='result_details')
-    user_answer = models.TextField(null=True, blank=True)  # Foydalanuvchi javobi
-    is_correct = models.BooleanField()  # To‘g‘ri yoki noto‘g‘ri
-    score = models.FloatField()  # Savolning balli (agar to‘g‘ri bo‘lsa, savolning balli, aks holda 0)
-    question_type = models.CharField(max_length=50)  # Savol turi (masalan, "yopiq" yoki "ochiq")
-    difficulty = models.CharField(max_length=50)  # Savol darajasi (masalan, "Q", "M", "B")
+    user_answer = models.TextField(null=True, blank=True)
+    is_correct = models.BooleanField()
+    score = models.FloatField()
+    question_type = models.CharField(max_length=50)
+    difficulty = models.CharField(max_length=50)
 
     def __str__(self):
         return f"Detail for {self.test_result} - Question {self.question.id}"
+
+
+class Feedback(models.Model):
+    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='feedbacks')
+    question_id = models.IntegerField()
+    question_text = models.TextField()
+    user_answer = models.TextField()
+    correct_answer = models.TextField()
+    feedback_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('student', 'question_id')
+        verbose_name = "Feedback"
+        verbose_name_plural = "Feedbacklar"
+        

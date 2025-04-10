@@ -15,6 +15,7 @@ class QuestionSerializer(serializers.ModelSerializer):
     class_number = serializers.StringRelatedField()
     question_type = serializers.StringRelatedField()
     difficulty = serializers.StringRelatedField()
+    image = serializers.SerializerMethodField()  # image maydonini dinamik qaytarish uchun
 
     class Meta:
         model = Question
@@ -23,3 +24,13 @@ class QuestionSerializer(serializers.ModelSerializer):
             'score', 'test_type', 'subject', 'variant', 'class_number',
             'question_type', 'difficulty', 'image', 'created_at'
         ]
+
+    def get_image(self, obj):
+        # Agar image mavjud bo‘lsa, to‘liq URL’ni qaytarish
+        if obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')  # Request kontekstini olish
+            if request is not None:
+                return request.build_absolute_uri(obj.image.url)
+            # Agar request konteksti bo‘lmasa, default URL qaytarish
+            return f"http://127.0.0.1:8000{obj.image.url}"
+        return None  # Agar image bo‘lmasa, None qaytarish

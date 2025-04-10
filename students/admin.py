@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Submission, TestResult, TestType, TestResultDetail
+from .models import Submission, TestResult, TestType, TestResultDetail, Feedback
 
 
 @admin.register(Submission)
@@ -34,3 +34,8 @@ class TestTypeAdmin(admin.ModelAdmin):
     list_filter = ('name',)
     search_fields = ('name',)
     list_editable = ('duration',)
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'question_id', 'question_text', 'user_answer')
