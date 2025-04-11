@@ -46,5 +46,4 @@ htmlcov/
 migrations/
 db.sqlite3
 .env
-.env
 /tests/test_file.xlsx/

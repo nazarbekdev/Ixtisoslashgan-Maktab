@@ -18,7 +18,7 @@ class TestResultDetailInline(admin.TabularInline):
 class TestResultAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'subject', 'test_type', 'correct', 'score', 'is_active', 'created_at')
     list_filter = ('student', 'subject', 'test_type', 'created_at', 'is_active')
-    search_fields = ('student', 'subject', 'test_type', 'created_at')
+    search_fields = ('student', 'subject')
     list_editable = ('is_active',)
 
 
