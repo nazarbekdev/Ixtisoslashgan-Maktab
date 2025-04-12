@@ -39,3 +39,4 @@ class TestTypeAdmin(admin.ModelAdmin):
 @admin.register(Feedback)
 class FeedbackAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'question_id', 'question_text', 'user_answer')
+    search_fields = ('student', 'question_id', 'question_text')
