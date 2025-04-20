@@ -4,13 +4,14 @@ from .models import Submission, TestResult, TestType, TestResultDetail, Feedback
 
 class SubmissionSerializer(serializers.ModelSerializer):
     file = serializers.SerializerMethodField()
+    class_number = serializers.PrimaryKeyRelatedField(read_only=True)
+    subject = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Submission
         fields = ['id', 'file', 'submitted_at', 'student', 'material', 'class_number', 'subject', 'grade']
 
     def get_file(self, obj):
-        # Faylning to‘liq URL ini qaytarish
         request = self.context.get('request')
         if obj.file and request:
             return request.build_absolute_uri(obj.file.url)

@@ -60,76 +60,6 @@ class MaterialListCreateView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             material = serializer.save()  # Materialni saqlaymiz, test_file ham saqlanadi
-
-            # Agar test_file mavjud bo‘lsa, savollarni o‘qib, Question modeliga saqlaymiz
-            if 'test_file' in request.FILES:
-                try:
-                    # Faylni vaqtincha saqlash
-                    file_path = default_storage.save('temp/test_file.xlsx', request.FILES['test_file'])
-                    file_full_path = default_storage.path(file_path)
-
-                    # Excel faylni o‘qish
-                    df = pd.read_excel(file_full_path)
-
-                    # Savol darajasini moslashtirish uchun mapping
-                    difficulty_mapping = {
-                        'B': QuestionDifficulty.objects.get(name='B'),
-                        'Q': QuestionDifficulty.objects.get(name='Q'),
-                        'M': QuestionDifficulty.objects.get(name='M')
-                    }
-
-                    # Savol turini moslashtirish uchun mapping
-                    question_type_mapping = {
-                        'ochiq': QuestionType.objects.get(name='ochiq'),
-                        'yopiq': QuestionType.objects.get(name='yopiq')
-                    }
-
-                    # Test turi sifatida "Fanga oid" ni olish
-                    test_type = TestType.objects.get(name='Fanga oid')
-
-                    # Har bir qatorni o‘qib, Question modeliga saqlash
-                    for index, row in df.iterrows():
-                        # Savol darajasini moslashtirish
-                        difficulty_name = row['Savol darajasi']
-                        if difficulty_name not in difficulty_mapping:
-                            return Response({'error': f'Noto‘g‘ri savol darajasi: {difficulty_name}'}, status=status.HTTP_400_BAD_REQUEST)
-                        difficulty = difficulty_mapping[difficulty_name]
-
-                        # Savol turini moslashtirish
-                        question_type_name = row['Savol turi'].lower()
-                        if question_type_name not in question_type_mapping:
-                            return Response({'error': f'Noto‘g‘ri savol turi: {question_type_name}'}, status=status.HTTP_400_BAD_REQUEST)
-                        question_type = question_type_mapping[question_type_name]
-
-                        # Variantni olish
-                        variant = Variant.objects.get(id=row['Variant'])
-                        print('material', material.class_number)
-                        # Question obyektini yaratish
-                        Question.objects.create(
-                            material=material,  # Material ID’sini qo‘shamiz
-                            class_number=material.class_number,  # Materialdan olamiz
-                            subject=material.subject,  # Materialdan olamiz
-                            quarter=None,
-                            test_type=test_type,  # "Fanga oid" test turi
-                            question_type=question_type,
-                            text=row['Savol'],
-                            correct_answer=row['Javob'],
-                            option_1=row['Xato javob 1'] if pd.notna(row['Xato javob 1']) and row['Xato javob 1'] != '-' else None,
-                            option_2=row['Xato javob 2'] if pd.notna(row['Xato javob 2']) and row['Xato javob 2'] != '-' else None,
-                            option_3=row['Xato javob 3'] if pd.notna(row['Xato javob 3']) and row['Xato javob 3'] != '-' else None,
-                            score=row['Ball'],
-                            difficulty=difficulty,
-                            variant=variant,
-                            image=None  # Excel’da rasm yo‘q
-                        )
-
-                    # Vaqtincha faylni o‘chirish
-                    default_storage.delete(file_path)
-
-                except Exception as e:
-                    # Agar xato yuz bersa, material saqlangan bo‘lsa ham xato xabarini qaytaramiz
-                    return Response({'error': f'Savollarni saqlashda xato: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -271,6 +201,7 @@ class TestUploadView(ListCreateAPIView):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Teacher ga tegishli testlarni olish
 class TestListView(APIView):

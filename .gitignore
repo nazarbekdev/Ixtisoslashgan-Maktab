@@ -47,3 +47,5 @@ migrations/
 db.sqlite3
 .env
 /tests/test_file.xlsx/
+backend-nginx
+nginx-frontend

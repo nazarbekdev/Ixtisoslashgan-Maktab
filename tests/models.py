@@ -60,7 +60,8 @@ class Question(models.Model):
     class_number = models.ForeignKey(Class, on_delete=models.CASCADE, null=True, blank=True, related_name='questions')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='questions')
     quarter = models.CharField(max_length=20, choices=QUARTER_CHOICES, null=True, blank=True)
-    test_type = models.ForeignKey('students.TestType', on_delete=models.CASCADE, default=1, related_name='questions')
+    test_type = models.ForeignKey('students.TestType', on_delete=models.CASCADE, null=True, blank=True,
+                                  related_name='questions')
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE, related_name='questions')
     text = models.TextField()
     correct_answer = models.TextField()
@@ -68,8 +69,9 @@ class Question(models.Model):
     option_2 = models.TextField(null=True, blank=True)
     option_3 = models.TextField(null=True, blank=True)
     score = models.FloatField()
-    difficulty = models.ForeignKey(QuestionDifficulty, on_delete=models.CASCADE, default=1, related_name='questions')
-    variant = models.ForeignKey(Variant, on_delete=models.CASCADE, default=1, related_name='questions')
+    difficulty = models.ForeignKey(QuestionDifficulty, on_delete=models.CASCADE, null=True, blank=True,
+                                   related_name='questions')
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE, null=True, blank=True, related_name='questions')
     image = models.ImageField(upload_to='questions/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -80,16 +82,16 @@ class Question(models.Model):
         verbose_name = "Savol"
         verbose_name_plural = "Savollar"
         indexes = [
-                    models.Index(fields=['test_type', 'subject', 'variant', 'question_type', 'class_number', 'quarter']),
-                ]
+            models.Index(fields=['test_type', 'subject', 'variant', 'question_type', 'class_number', 'quarter']),
+        ]
 
 
 class TestControl(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    test_type = models.ForeignKey('students.TestType', on_delete=models.CASCADE, default=1)
-    question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE, default=1)
-    variant = models.ForeignKey(Variant, on_delete=models.CASCADE, default=1)
-    difficulty = models.ForeignKey(QuestionDifficulty, on_delete=models.CASCADE, default=1)
+    test_type = models.ForeignKey('students.TestType', on_delete=models.CASCADE, null=True, blank=True)
+    question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE, null=True, blank=True)
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE, null=True, blank=True)
+    difficulty = models.ForeignKey(QuestionDifficulty, on_delete=models.CASCADE, null=True, blank=True)
     limit = models.PositiveIntegerField(default=1)
 
     def __str__(self):

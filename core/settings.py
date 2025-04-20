@@ -63,7 +63,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",  # Frontend server
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  # Sinov uchun (ishlab chiqishda False qiling)
+# CORS_ALLOW_ALL_ORIGINS = True  # Sinov uchun (ishlab chiqishda False qiling)
 
 # DRF sozlamalari
 REST_FRAMEWORK = {

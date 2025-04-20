@@ -21,7 +21,7 @@ class Submission(models.Model):
     student = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     class_number = models.ForeignKey(Class, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    material = models.ForeignKey(Material, on_delete=models.CASCADE)
+    material = models.ForeignKey('teachers.Material', on_delete=models.CASCADE, null=True, blank=True)
     file = models.FileField(upload_to='media/submissions/')
     grade = models.IntegerField(default=0)
     submitted_at = models.DateTimeField(auto_now_add=True)
@@ -45,7 +45,7 @@ class TestResult(models.Model):
     student = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='results')
     subject = models.ForeignKey('courses.Subject', on_delete=models.CASCADE, related_name='results')
     test_type = models.ForeignKey('TestType', on_delete=models.CASCADE, related_name='results')
-    variant = models.ForeignKey('tests.Variant', on_delete=models.CASCADE, null=True, related_name='variant_results')
+    variant = models.ForeignKey('tests.Variant', on_delete=models.CASCADE, null=True, blank=True, related_name='variant_results')
     quarter = models.CharField(max_length=20, choices=QUARTER_CHOICES, null=True, blank=True)
     correct = models.CharField(max_length=10)
     score = models.CharField(max_length=10)
@@ -63,7 +63,7 @@ class TestResult(models.Model):
 
 class TestResultDetail(models.Model):
     test_result = models.ForeignKey(TestResult, on_delete=models.CASCADE, related_name='details')
-    question = models.ForeignKey('tests.Question', on_delete=models.CASCADE, related_name='result_details')
+    question = models.ForeignKey('tests.Question', on_delete=models.CASCADE, null=True, blank=True, related_name='result_details')
     user_answer = models.TextField(null=True, blank=True)
     is_correct = models.BooleanField()
     score = models.FloatField()

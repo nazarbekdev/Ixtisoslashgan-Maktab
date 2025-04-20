@@ -10,6 +10,7 @@ from .models import Submission, TestResult, TestType, Feedback
 from .serializers import SubmissionSerializer, TestTypeSerializer, TestResultSerializer, FeedbackSerializer
 from django.core.files.storage import default_storage
 from django.db.models import Avg
+from rest_framework.parsers import MultiPartParser, FormParser
 import logging
 import os
 import openai
@@ -107,26 +108,54 @@ class StudentProfileByIdAPIView(APIView):
 
 
 class SubmitAssignmentAPIView(APIView):
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
-        material_id = request.data.get('material_id')
-        file = request.FILES.get('file')
-
-        if not material_id or not file:
-            return Response({"error": "Material ID va fayl majburiy!"}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
-            material = Material.objects.get(id=material_id)
+            material_id = request.data.get('material_id')
+            file = request.FILES.get('file')
+
+            if not material_id or not file:
+                return Response(
+                    {"error": "Material ID va fayl majburiy!"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Materialni topish
+            try:
+                material = Material.objects.get(id=material_id)
+            except Material.DoesNotExist:
+                return Response(
+                    {"error": "Material topilmadi!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Foydalanuvchining student ekanligini tekshirish
+            if request.user.role != 'student':
+                return Response(
+                    {"error": "Faqat studentlar vazifa jo‘nata oladi!"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            # Submission obyektini yaratish
             submission = Submission.objects.create(
-                student=request.user,
+                student=request.user,  # To‘g‘ridan-to‘g‘ri CustomUser obyektini saqlaymiz
                 material=material,
+                class_number=material.class_number,
+                subject=material.subject,
                 file=file
             )
-            serializer = SubmissionSerializer(submission)
+
+            serializer = SubmissionSerializer(submission, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Material.DoesNotExist:
-            return Response({"error": "Material topilmadi!"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            print(f"Vazifani jo‘natishda xato: {str(e)}")
+            return Response(
+                {"error": f"Vazifani jo‘natishda xato: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class StudentSubmitAssignmentAPIView(APIView):
